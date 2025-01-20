@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# insta485run
+#
+# Clean, build and start server
+#
+# Andrew DeOrio <awdeorio@umich.edu>
+# (注：可填写你自己的信息)
+
+# 一旦脚本任何一步出错就退出，打印执行的命令方便调试
+set -Eeuo pipefail
+set -x
+
+# 1) 清理旧的自动生成目录
+rm -rf insta485/html
+
+# 2) 生成新的静态页面
+insta485generator insta485
+
+# 3) 启动简易服务器
+cd insta485/html
+python3 -m http.server 8000

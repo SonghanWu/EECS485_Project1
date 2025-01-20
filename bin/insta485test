@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# insta485test
+#
+# Test code with unit tests and style checkers, then validate HTML
+#
+
+# 如果任意命令失败就退出，打印执行的命令
+set -Eeuo pipefail
+set -x
+
+# 1) 运行 pytest 单元测试
+pytest -v tests/
+
+# 2) 代码风格检查
+pycodestyle insta485generator
+pydocstyle insta485generator
+pylint insta485generator
+
+# 3) 删除并重新生成 insta485/html
+rm -rf insta485/html
+insta485generator insta485
+
+# 4) HTML 验证
+#    1) 验证手写的 html/ (如果存在)
+html5validator --ignore JAVA_TOOL_OPTIONS --root html
+#    2) 验证自动生成的 insta485/html/
+html5validator --ignore JAVA_TOOL_OPTIONS --root insta485/html

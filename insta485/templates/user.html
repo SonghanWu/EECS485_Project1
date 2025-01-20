@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>insta485</title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header>
+    <a href="/">Insta485 Home</a>
+    <div style="float:right;">
+      <a href="/explore/">Explore</a>
+      <a href="/users/{{ logname }}/">{{ logname }}</a>
+    </div>
+  </header>
+
+  <!-- 用户主页信息 -->
+  <h1>{{ username }}</h1>
+
+  <!-- 关系 (following / not following / 空) -->
+  {% if logname == username %}
+    <p></p>
+  {% else %}
+    {% if logname_follows_username %}
+      <p>following</p>
+    {% else %}
+      <p>not following</p>
+    {% endif %}
+  {% endif %}
+
+  <!-- 帖子总数: 单复数 -->
+  <p>
+    {% if total_posts == 0 %}
+      0 posts
+    {% elif total_posts == 1 %}
+      1 post
+    {% else %}
+      {{ total_posts }} posts
+    {% endif %}
+  </p>
+
+  <!-- followers & following 数量 + 链接 -->
+  <p>
+    <a href="/users/{{ username }}/followers/">
+      {% if followers == 0 %}
+        0 followers
+      {% elif followers == 1 %}
+        1 follower
+      {% else %}
+        {{ followers }} followers
+      {% endif %}
+    </a>
+    |
+    <a href="/users/{{ username }}/following/">
+      {% if following == 0 %}
+        0 following
+      {% elif following == 1 %}
+        1 following
+      {% else %}
+        {{ following }} following
+      {% endif %}
+    </a>
+  </p>
+
+  <!-- 全名 -->
+  <p>Name: {{ fullname }}</p>
+
+  <!-- 用户所有帖子 (点击跳转到 /posts/<postid>/ ) -->
+  <div>
+  {% for p in posts %}
+    <a href="/posts/{{ p.postid }}/">
+      <img src="{{ p.img_url }}" alt="post image" width="200">
+    </a>
+  {% endfor %}
+  </div>
+</body>
+</html>

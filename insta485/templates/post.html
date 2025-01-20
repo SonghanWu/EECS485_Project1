@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>insta485</title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header>
+    <a href="/">Insta485 Home</a>
+    <div style="float:right;">
+      <a href="/explore/">Explore</a>
+      <a href="/users/{{ logname }}/">{{ logname }}</a>
+    </div>
+  </header>
+
+  <h1>Post {{ postid }}</h1>
+
+  <article>
+    <!-- 头像 & 用户名 -->
+    <div>
+      <a href="/users/{{ owner }}/">
+        <img src="{{ owner_img_url }}" alt="profile pic" width="50">
+      </a>
+      <a href="/users/{{ owner }}/">{{ owner }}</a>
+    </div>
+
+    <!-- 帖子图片 -->
+    <img src="{{ img_url }}" alt="post image">
+
+    <!-- 时间戳 -->
+    <p>{{ timestamp }}</p>
+
+    <!-- likes 单复数 -->
+    <p>
+      {% if likes == 0 %}
+        0 likes
+      {% elif likes == 1 %}
+        1 like
+      {% else %}
+        {{ likes }} likes
+      {% endif %}
+    </p>
+
+    <!-- 评论列表 -->
+    {% for c in comments %}
+      <p>
+        <a href="/users/{{ c.owner }}/">{{ c.owner }}</a>
+        {{ c.text }}
+      </p>
+    {% endfor %}
+  </article>
+</body>
+</html>

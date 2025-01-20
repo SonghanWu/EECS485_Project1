@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>insta485</title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header>
+    <a href="/">Insta485 Home</a>
+    <div style="float:right;">
+      <a href="/explore/">Explore</a>
+      <a href="/users/{{ logname }}/">{{ logname }}</a>
+    </div>
+  </header>
+
+  <h1>Following list of {{ username }}</h1>
+
+  {% for u in following %}
+    <div>
+      <img src="{{ u.user_img_url }}" alt="profile pic" width="50">
+      <a href="/users/{{ u.username }}/">{{ u.username }}</a>
+      {% if logname == u.username %}
+        <span></span>
+      {% else %}
+        {% if u.logname_follows_username %}
+          <span>following</span>
+        {% else %}
+          <span>not following</span>
+        {% endif %}
+      {% endif %}
+    </div>
+  {% endfor %}
+</body>
+</html>

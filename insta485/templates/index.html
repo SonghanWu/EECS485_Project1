@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>insta485</title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header>
+    <a href="/">Insta485 Home</a>
+    <div style="float:right;">
+      <a href="/explore/">Explore</a>
+      <a href="/users/{{ logname }}/">{{ logname }}</a>
+    </div>
+  </header>
+
+  <!-- 显示所有帖子 -->
+  {% for post in posts %}
+  <article>
+    <!-- 点击时间戳 跳到 /posts/<postid>/ -->
+    <a href="/posts/{{ post.postid }}/">
+      <span>{{ post.timestamp }}</span>
+    </a>
+
+    <!-- 用户头像 & 用户名 链接到 /users/<owner>/ -->
+    <div>
+      <a href="/users/{{ post.owner }}/">
+        <img src="{{ post.owner_img_url }}" alt="profile pic" width="50">
+      </a>
+      <a href="/users/{{ post.owner }}/">{{ post.owner }}</a>
+    </div>
+
+    <!-- 帖子图片 -->
+    <img src="{{ post.img_url }}" alt="post image">
+
+    <!-- 点赞数：0 likes/1 like/... -->
+    <p>
+      {% if post.likes == 0 %}
+        0 likes
+      {% elif post.likes == 1 %}
+        1 like
+      {% else %}
+        {{ post.likes }} likes
+      {% endif %}
+    </p>
+
+    <!-- 评论列表 -->
+    {% for c in post.comments %}
+      <p>
+        <a href="/users/{{ c.owner }}/">{{ c.owner }}</a>
+        {{ c.text }}
+      </p>
+    {% endfor %}
+  </article>
+  {% endfor %}
+</body>
+</html>
