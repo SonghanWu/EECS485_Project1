@@ -1,0 +1,101 @@
+"""Build static HTML site from directory of HTML templates and plain files."""
+"""import click
+import pathlib
+
+
+@click.command()
+@click.argument("input_dir", nargs=1, type=click.Path(exists=True))
+def main(input_dir):
+        input_dir = pathlib.Path(input_dir)
+        print(f"DEBUG input_dir={input_dir}")
+
+
+if __name__ == "__main__":
+    main()"""
+
+import click
+import json
+import pathlib
+import jinja2
+import shutil
+import sys
+
+@click.command()
+@click.argument("input_dir", nargs=1, type=click.Path(exists=True))
+@click.option("--output", "-o", "output_dir", default=None, type=click.Path())
+@click.option("--verbose", "-v", is_flag=True, help="Print more output.")
+def main(input_dir, output_dir, verbose):
+    input_path = pathlib.Path(input_dir)
+
+    # 如果未指定 --output，则默认用 input_dir/html
+    if output_dir is None:
+        output_path = input_path/"html"
+    else:
+        output_path = pathlib.Path(output_dir)
+
+    # 1) 确认 output_path 不存在或处理是否覆盖
+    # 2) 创建 output_path 目录
+    # 3) 读取 config.json
+    config_filename = input_path/"config.json"
+    with config_filename.open("r", encoding="utf-8") as f:
+        config_list = json.load(f)
+
+    # 4) 设置 Jinja2 模板环境
+    template_dir = input_path/"templates"
+    template_env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(template_dir)),
+        autoescape=jinja2.select_autoescape(['html', 'xml']),
+    )
+
+    # 5) 渲染每个配置对应的模板
+    for item in config_list:
+        template_name = item["template"]
+        context = item["context"]
+        # 加载并渲染
+        template = template_env.get_template(template_name)
+        rendered_html = template.render(context)
+
+        # 输出文件名，可根据 url 也做更多逻辑
+        # 例如，若 url="/" => "index.html"；若 url="/about/" => "about/index.html"
+        # 这里仅用简单示例
+        output_filename = output_path/"index.html"
+
+        # 写文件
+        output_filename.parent.mkdir(parents=True, exist_ok=True)
+        with output_filename.open("w", encoding="utf-8") as outf:
+            outf.write(rendered_html)
+
+    # 6) 可选：若存在 static/ 目录，就复制到 output_path/static/
+    static_dir = input_path/"static"
+    if static_dir.is_dir():
+        shutil.copytree(static_dir, output_path/"static", dirs_exist_ok=True)
+
+    if verbose:
+        print(f"Rendered {template_name} -> {output_filename}")
+    # 当复制静态文件夹
+    if verbose and static_was_copied:
+        print(f"Copied {static_dir} -> {output_dir}")
+
+
+
+
+
+    try:
+        # 可能会抛出 FileNotFoundError 或 JSONDecodeError
+        with (input_dir / "config.json").open() as f:
+            config_list = json.load(f)
+    except FileNotFoundError:
+        print(f"insta485generator error: '{input_dir}/config.json' not found")
+        sys.exit(1)
+    except json.JSONDecodeError as e:
+        print(f"insta485generator error: '{input_dir}/config.json'")
+        print(str(e))  # 打印异常自身提示
+        sys.exit(1)
+
+    try:
+        # 可能会抛出 jinja2.exceptions.TemplateSyntaxError 等
+        ...
+    except jinja2.TemplateSyntaxError as e:
+        print(f"insta485generator error: '{e.name}'")
+        print(e.message)
+        sys.exit(1)
